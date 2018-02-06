@@ -11,18 +11,44 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static com.example.android.justjava.R.id.Choc;
+
 public class MainActivity extends AppCompatActivity {
     int numberOfCoffees = 1;
+    boolean whipp;
+    boolean hasWhipp;
+    boolean choc;
+    boolean hasChoc;
+    String nameCl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (savedInstanceState != null) {
+            numberOfCoffees = savedInstanceState.getInt("numberOfCoffees");
+            displayQuantity(numberOfCoffees);
+            hasWhipp = savedInstanceState.getBoolean("hasWhipp");
+            if (hasWhipp == true) {
+                CheckBox hasW = (CheckBox) findViewById(R.id.Whip);
+                hasW.setChecked(true);
+            }
+            hasChoc = savedInstanceState.getBoolean("hasChoc");
+            if (hasChoc == true) {
+                CheckBox choc = (CheckBox) findViewById(R.id.Choc);
+                choc.setChecked(true);
+            }
+            nameCl = savedInstanceState.getString("name");
+            TextView name = (TextView) findViewById(R.id.name);
+            name.setText(nameCl);
+
+        }
     }
+
 
     public void submitOrder(View view) {
         createOrderSummery();
         Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.setData(Uri.parse("mailto:"));
         intent.putExtra(Intent.EXTRA_EMAIL, "pavluha.losenator69@gmail.com");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Just Java order for " + nameOfClient());
         intent.putExtra(Intent.EXTRA_TEXT, createOrderSummery());
@@ -32,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private String createOrderSummery () {
         CheckBox hasWhipp = (CheckBox) findViewById(R.id.Whip);
-        CheckBox Choc = (CheckBox) findViewById(R.id.Choc);
+        CheckBox hasChoc = (CheckBox) findViewById(Choc);
         calculatePrice();
        int price = calculatePrice();
         String name = nameOfClient();
@@ -43,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             priceMessage =  priceMessage + "\nAdd whipped cream? No.";
-        if (Choc.isChecked()) {
+        if (hasChoc.isChecked()) {
             priceMessage = priceMessage + "\nAdd chocolate? Yes.";
             price += 2;
         }
@@ -100,5 +126,26 @@ public class MainActivity extends AppCompatActivity {
        String name = nameOfCl.getText().toString();
       return name;
     }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putInt("numberOfCoffees", numberOfCoffees);
+        savedInstanceState.putString("name", nameOfClient());
+        CheckBox hasWhipp = (CheckBox) findViewById(R.id.Whip);
+        if (hasWhipp.isChecked()) {
+            whipp = true;
+        } else {
+            whipp = false;
+        }
+        savedInstanceState.putBoolean("hasWhipp", whipp);
+        CheckBox hasChoc = (CheckBox) findViewById(Choc);
+        if (hasChoc.isChecked()){
+            choc = true;
+        } else {
+            choc = false;
+        }
+        savedInstanceState.putBoolean("hasChoc", choc);
+        savedInstanceState.putString("name", nameOfClient());
+    }
+
 
 }
